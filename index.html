@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Runner Game Improved</title>
+    <style>
+        body {
+              margin: 0;
+                    overflow: hidden;
+                          background: #222;
+                              }
+                                  canvas {
+                                        display: block;
+                                              margin: auto;
+                                                    background: #fff;
+                                                        }
+                                                          </style>
+                                                          </head>
+                                                          <body>
+
+                                                          <canvas id="gameCanvas"></canvas>
+
+                                                          <script>
+                                                          const canvas = document.getElementById("gameCanvas");
+                                                          const ctx = canvas.getContext("2d");
+
+                                                          canvas.width = 800;
+                                                          canvas.height = 300;
+
+                                                          // Player
+                                                          let player = {
+                                                            x: 50,
+                                                              y: 200,
+                                                                width: 30,
+                                                                  height: 30,
+                                                                    dy: 0,
+                                                                      gravity: 0.7,
+                                                                        jumpForce: -13,
+                                                                          jumping: false
+                                                                          };
+
+                                                                          // Obstacle
+                                                                          let obstacle = {
+                                                                            x: 800,
+                                                                              y: 220,
+                                                                                width: 20,
+                                                                                  height: 40,
+                                                                                    speed: 5
+                                                                                    };
+
+                                                                                    let score = 0;
+                                                                                    let gameOver = false;
+
+                                                                                    // Draw ground
+                                                                                    function drawGround() {
+                                                                                      ctx.fillStyle = "#444";
+                                                                                        ctx.fillRect(0, 250, canvas.width, 5);
+                                                                                        }
+
+                                                                                        // Draw player
+                                                                                        function drawPlayer() {
+                                                                                          ctx.fillStyle = "#000";
+                                                                                            ctx.fillRect(player.x, player.y, player.width, player.height);
+                                                                                            }
+
+                                                                                            // Draw obstacle
+                                                                                            function drawObstacle() {
+                                                                                              ctx.fillStyle = "red";
+                                                                                                ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+                                                                                                }
+
+                                                                                                // Draw score
+                                                                                                function drawScore() {
+                                                                                                  ctx.fillStyle = "#000";
+                                                                                                    ctx.font = "20px Arial";
+                                                                                                      ctx.fillText("Score: " + score, 650, 30);
+                                                                                                      }
+
+                                                                                                      // Draw game over
+                                                                                                      function drawGameOver() {
+                                                                                                        ctx.fillStyle = "black";
+                                                                                                          ctx.font = "30px Arial";
+                                                                                                            ctx.fillText("Game Over!", 300, 120);
+                                                                                                              ctx.font = "20px Arial";
+                                                                                                                ctx.fillText("Press R to Restart", 300, 160);
+                                                                                                                }
+
+                                                                                                                // Reset game
+                                                                                                                function resetGame() {
+                                                                                                                  player.y = 200;
+                                                                                                                    player.dy = 0;
+                                                                                                                      obstacle.x = 800;
+                                                                                                                        obstacle.speed = 5;
+                                                                                                                          score = 0;
+                                                                                                                            gameOver = false;
+                                                                                                                            }
+
+                                                                                                                            // Game loop
+                                                                                                                            function update() {
+                                                                                                                              ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                                                                                                                                drawGround();
+
+                                                                                                                                  if (!gameOver) {
+                                                                                                                                      // Player physics
+                                                                                                                                          player.y += player.dy;
+                                                                                                                                              player.dy += player.gravity;
+
+                                                                                                                                                  if (player.y >= 200) {
+                                                                                                                                                        player.y = 200;
+                                                                                                                                                              player.jumping = false;
+                                                                                                                                                                  }
+
+                                                                                                                                                                      // Move obstacle
+                                                                                                                                                                          obstacle.x -= obstacle.speed;
+
+                                                                                                                                                                              // Increase difficulty
+                                                                                                                                                                                  if (score % 5 === 0 && score !== 0) {
+                                                                                                                                                                                        obstacle.speed += 0.01;
+                                                                                                                                                                                            }
+
+                                                                                                                                                                                                // Reset obstacle
+                                                                                                                                                                                                    if (obstacle.x < -20) {
+                                                                                                                                                                                                          obstacle.x = 800;
+                                                                                                                                                                                                                score++;
+                                                                                                                                                                                                                    }
+
+                                                                                                                                                                                                                        // Collision
+                                                                                                                                                                                                                            if (
+                                                                                                                                                                                                                                  player.x < obstacle.x + obstacle.width &&
+                                                                                                                                                                                                                                        player.x + player.width > obstacle.x &&
+                                                                                                                                                                                                                                              player.y < obstacle.y + obstacle.height &&
+                                                                                                                                                                                                                                                    player.y + player.height > obstacle.y
+                                                                                                                                                                                                                                                        ) {
+                                                                                                                                                                                                                                                              gameOver = true;
+                                                                                                                                                                                                                                                                  }
+                                                                                                                                                                                                                                                                    }
+
+                                                                                                                                                                                                                                                                      drawPlayer();
+                                                                                                                                                                                                                                                                        drawObstacle();
+                                                                                                                                                                                                                                                                          drawScore();
+
+                                                                                                                                                                                                                                                                            if (gameOver) {
+                                                                                                                                                                                                                                                                                drawGameOver();
+                                                                                                                                                                                                                                                                                  }
+
+                                                                                                                                                                                                                                                                                    requestAnimationFrame(update);
+                                                                                                                                                                                                                                                                                    }
+
+                                                                                                                                                                                                                                                                                    // Controls
+                                                                                                                                                                                                                                                                                    document.addEventListener("keydown", (e) => {
+                                                                                                                                                                                                                                                                                      if (e.code === "Space" && !player.jumping && !gameOver) {
+                                                                                                                                                                                                                                                                                          player.dy = player.jumpForce;
+                                                                                                                                                                                                                                                                                              player.jumping = true;
+                                                                                                                                                                                                                                                                                                }
+
+                                                                                                                                                                                                                                                                                                  if (e.code === "KeyR") {
+                                                                                                                                                                                                                                                                                                      resetGame();
+                                                                                                                                                                                                                                                                                                        }
+                                                                                                                                                                                                                                                                                                        });
+
+                                                                                                                                                                                                                                                                                                        // Start
+                                                                                                                                                                                                                                                                                                        update();
+                                                                                                                                                                                                                                                                                                        </script>
+
+                                                                                                                                                                                                                                                                                                        </body>
+                                                                                                                                                                                                                                                                                                        </html>
